@@ -87,10 +87,10 @@ cd universo-vagas
 Abra um terminal na pasta raiz e execute:
 
 ```bash
-dotnet run --project src/Backend/Vaga.API/Vaga.API.csproj
+$env:ASPNETCORE_ENVIRONMENT="Development"; dotnet run --project src/Backend/Vaga.API/Vaga.API.csproj
 ```
 
-A API iniciará localmente. Abra o navegador em: **`https://localhost:7001/swagger`** (ou a porta SSL indicada no console) para acessar o painel visual do **Swagger** e testar os endpoints RESTful.
+A API iniciará localmente. Abra o navegador em: **`https://localhost:5194/swagger`** (ou a porta SSL indicada no console) para acessar o painel visual do **Swagger** e testar os endpoints RESTful.
 
 ### 3. Executar o Frontend (Blazor WebAssembly)
 
@@ -100,7 +100,7 @@ Abra um segundo terminal na pasta raiz e execute:
 dotnet run --project src/Frontend/Vaga.Blazor/Vaga.Blazor.csproj
 ```
 
-O frontend estará disponível em: **`https://localhost:5001`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
+O frontend estará disponível em: **`https://localhost:5162`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
 
 ---
 
@@ -117,3 +117,39 @@ A suíte cobre:
 - `Vaga_DeveFalhar_QuandoTipoVagaForInvalido` (Restrição do domínio corporativo).
 - `Vaga_DeveFalhar_QuandoDataFimForAnteriorADataInicio` (Consistência temporal).
 - `Vaga_DevePassar_QuandoDadosEDatasForemValidos` (Garantia do Happy Path).
+
+---
+
+## 🖥️ Telas do Projeto e Recursos de Interface
+
+O sistema é dividido em subgrupos visuais e técnicos bem definidos, mapeando todo o ecossistema da aplicação:
+
+### 📑 1. Documentação e Integração (Backend)
+*   **Swagger UI (API RESTful):** Endpoint centralizado de testes (`/swagger`) que serve como documentação viva. Permite a execução e auditoria imediata de payloads JSON para as operações de persistência e validação no servidor.
+<img width="1875" height="766" alt="image" src="https://github.com/user-attachments/assets/355a356c-8e9b-4eab-b25f-c94d5450df48" />
+
+### 🎨 2. Interface de Usuário (Blazor Frontend SPA)
+*   **Página Inicial (Home):** Painel de apresentação do ecossistema técnico. Exibe cartões dinâmicos detalhando a stack (.NET 10, Blazor, SOLID) e o cartão profissional de autoria do projeto.
+<img width="1895" height="850" alt="image" src="https://github.com/user-attachments/assets/e4d9634d-9bb4-4366-8c4e-34c39970dec0" />
+
+*   **Painel Técnico (Sobre):** Tela de conformidade corporativa. Demonstra de forma analítica como os padrões de engenharia (SRP, DIP, Repository Pattern e FluentValidation) foram materializados no código fonte.
+<img width="1881" height="1070" alt="image" src="https://github.com/user-attachments/assets/40799ce9-1dcb-456b-a0de-c87570e91210" />
+
+*   **Cadastrar Vaga:** Formulário reativo integrado com `DataAnnotationsValidator`. Possui controle de digitação instantâneo em português (`ParsingErrorMessage`) que bloqueia o envio caso os campos obrigatórios ou as datas de vigência estejam incorretas.
+<img width="1886" height="824" alt="image" src="https://github.com/user-attachments/assets/dd772212-1ba1-4523-845b-47dfbe0b003f" />
+
+*   **Cadastrar Vaga:** Validação da data 
+<img width="1887" height="843" alt="image" src="https://github.com/user-attachments/assets/7731bd23-5408-4397-8a6a-926ca5a3d4aa" />
+
+*   **Vagas Publicadas (Listagem):** Painel de gerenciamento com suporte a ordenação dinâmica por Título, Data de Início ou Data de Término. Aplica opacidade e tags visuais de bloqueio (`🛑 Expirada`) em cards cuja data final seja menor que a data atual.
+<img width="1870" height="866" alt="image" src="https://github.com/user-attachments/assets/3d9ba3b0-d938-4402-b587-347d58259f71" />
+
+*   **Vagas Publicadas (Listagem):** Ordenado por data de término.  
+<img width="1867" height="856" alt="image" src="https://github.com/user-attachments/assets/59c3faa2-a58a-4d4f-8834-0e7b2b685a44" />
+  
+*   **Edição da Vaga (Modal Isolado):** Componente especialista de mutação de dados carregado de forma declarativa via overlay. Mantém a mesma identidade visual e rigor de validação temporal do cadastro principal.
+<img width="1185" height="770" alt="image" src="https://github.com/user-attachments/assets/364009a5-b70c-4c35-aab0-8762284c7e90" />
+
+### 🧪 3. Suíte de Qualidade (Testes Unitários)
+*   **Testes Automatizados (xUnit):** Camada desacoplada executada via CLI que audita a consistência lógica do negócio. Garante que qualquer alteração de código que viole as regras de tipos de vaga ou ordens de datas quebre o build de integração contínua (CI).
+<img width="1048" height="593" alt="image" src="https://github.com/user-attachments/assets/ef6c8827-ce08-4b47-afd9-92166c12afb6" />
