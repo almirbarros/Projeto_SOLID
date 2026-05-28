@@ -1,0 +1,8 @@
+## Elementos de build do .NET
+[Bb]in/
+[Oo]bj/
+
+## Configurações do VS Code e ferramentas locais
+.vscode/
+*.user
+*.suo

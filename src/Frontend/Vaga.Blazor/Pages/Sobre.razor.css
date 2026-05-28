@@ -1,0 +1,147 @@
+.sobre-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem 3rem 1rem;
+}
+
+/* Cabeçalho da página */
+.topo-painel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.titulo-pagina {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+}
+
+.subtitulo-pagina {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.btn-home {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    color: #fff;
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-home:hover {
+    background-color: #5c636a;
+}
+
+/* Alerta de Destaque */
+.alert-demonstracao {
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    color: #0f5132;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Grid Organizador dos Cards */
+.painel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Base dos Cards Técnicos */
+.card-tecnico {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-corpo {
+    padding: 1.25rem;
+}
+
+.card-titulo {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* Varições das Cores e Bordas Laterais do Bootstrap */
+.borda-azul { border-left: 4px solid #0d6efd; }
+.borda-verde { border-left: 4px solid #198754; }
+.borda-laranja { border-left: 4px solid #ffc107; }
+.borda-ciano { border-left: 4px solid #0dcaf0; }
+
+.texto-azul { color: #0d6efd; }
+.texto-verde { color: #198754; }
+.texto-laranja { color: #b48600; } 
+.texto-ciano { color: #0aa2c0; }
+
+/* Listas internas do card */
+.lista-detalhes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-item {
+    font-size: 0.875rem;
+    color: #212529;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.lista-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Bloco Customizado de Cultura */
+.cultura-bloco {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #6c757d;
+    line-height: 1.6;
+}
+
+/* Rodapé */
+.rodape-tecnico {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid #dee2e6;
+    color: #6c757d;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+/* Responsividade para telas mobile */
+@media (max-width: 768px) {
+    .topo-painel {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-home {
+        width: 100%;
+        text-align: center;
+    }
+    .painel-grid {
+        grid-template-columns: 1fr;
+    }
+}

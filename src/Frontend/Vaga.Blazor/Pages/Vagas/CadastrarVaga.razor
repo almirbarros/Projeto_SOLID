@@ -1,0 +1,112 @@
+@page "/cadastrar-vaga"
+@using VagaClasse = Vaga.Domain.Entities.Vaga
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<div class="cadastro-container">
+    <h3 class="titulo-pagina">Criar Nova Oportunidade</h3>
+    <p class="subtitulo-pagina">Promovendo inovação e transformação social através de vagas inclusivas.</p>
+
+    @if (erros.Any())
+    {
+        <div class="alert-erros">
+            <ul>
+                @foreach (var erro in erros)
+                {
+                    <li>@erro</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <EditForm Model="@novaVaga" OnValidSubmit="HandleCadastro" class="form-cadastro">
+        <!-- Habilita o mecanismo de validação por anotações de dados -->
+        <DataAnnotationsValidator />
+
+        <div class="campo-grupo">
+            <label class="form-label">Título da Vaga</label>
+            <InputText @bind-Value="novaVaga.Titulo" class="form-input" placeholder="Ex: Desenvolvedor .NET PL" />
+            <ValidationMessage For="@(() => novaVaga.Titulo)" class="msg-erro" />
+        </div>
+
+        <div class="campo-grupo">
+            <label class="form-label">Descrição</label>
+            <InputTextArea @bind-Value="novaVaga.Descricao" class="form-textarea" rows="4" />
+            <ValidationMessage For="@(() => novaVaga.Descricao)" class="msg-erro" />
+        </div>
+
+        <div class="campo-grupo">
+            <label class="form-label">Tipo de Vaga</label>
+            <InputSelect @bind-Value="novaVaga.TipoVaga" class="form-select">
+                <option value="">-- Selecione o Modelo --</option>
+                <option value="Remoto">🏢 Remoto (Liberdade geográfica)</option>
+                <option value="Híbrido">🤝 Híbrido (O melhor dos dois mundos)</option>
+                <option value="Presencial">📍 Presencial</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => novaVaga.TipoVaga)" class="msg-erro" />
+        </div>
+
+        <div class="campo-linha-dupla">
+            <div class="campo-grupo">
+                <label class="form-label">Data de Início</label>
+                <!-- Atributo ParsingErrorMessage adicionado abaixo -->
+                <InputDate @bind-Value="novaVaga.DataInicio" class="form-input"
+                           ParsingErrorMessage="A data de início deve ser uma data válida." />
+                <ValidationMessage For="@(() => novaVaga.DataInicio)" class="msg-erro" />
+            </div>
+
+            <div class="campo-grupo">
+                <label class="form-label">Data de Término</label>
+                <!-- Atributo ParsingErrorMessage adicionado abaixo -->
+                <InputDate @bind-Value="novaVaga.DataFim" class="form-input"
+                           ParsingErrorMessage="A data de término deve ser uma data válida." />
+                <ValidationMessage For="@(() => novaVaga.DataFim)" class="msg-erro" />
+            </div>
+        </div>
+
+        <div class="campo-checkbox">
+            <InputCheckbox @bind-Value="novaVaga.EhVagaAfirmativa" class="checkbox-input" id="vagaAfirmativa" />
+            <label class="checkbox-label" for="vagaAfirmativa">
+                Esta é uma vaga afirmativa (Diversidade e Inclusão)
+            </label>
+        </div>
+
+        <button type="submit" class="btn-publicar">Publicar Vaga</button>
+    </EditForm>
+</div>
+
+@code {
+    // CORREÇÃO: Inicializa o objeto já com as datas padrão válidas do dia atual
+    // Isso remove o estado inválido "01/01/0001" e permite que o Blazor valide o formulário com sucesso
+    private VagaClasse novaVaga = new()
+    {
+        DataInicio = DateTime.Today,
+        DataFim = DateTime.Today.AddDays(30) // Sugere automaticamente 30 dias de prazo
+    };
+
+    private List<string> erros = new();
+
+    private async Task HandleCadastro()
+    {
+        erros.Clear();
+
+        // Validação lógica extra de segurança no front-end
+        if (novaVaga.DataFim < novaVaga.DataInicio)
+        {
+            erros.Add("A data de término não pode ser anterior à data de início.");
+            return;
+        }
+
+        var response = await Http.PostAsJsonAsync("api/vagas", novaVaga);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/vagas-publicadas");
+        }
+        else
+        {
+            var errosApi = await response.Content.ReadFromJsonAsync<List<string>>();
+            if (errosApi != null) erros = errosApi;
+        }
+    }
+}

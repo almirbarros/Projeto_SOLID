@@ -1,0 +1,41 @@
+﻿<div class="top-row navbar navbar-dark">
+    <div class="navbar-container">
+        <a class="navbar-brand" href="">Universo Vagas</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="nav-menu-container @NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="nav-list">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Início
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="cadastrar-vaga">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Cadastrar Vaga
+            </NavLink>
+        </div>
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="vagas-publicadas">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Vagas Publicadas
+            </NavLink>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

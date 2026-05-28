@@ -1,0 +1,181 @@
+.home-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Bloco de Destaque */
+.banner-destaque {
+    padding: 3rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    border-left: 5px solid #0d6efd;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.banner-conteudo {
+    padding: 0.5rem 0;
+}
+
+.banner-titulo {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #212529;
+    margin: 0;
+}
+
+.banner-subtitulo {
+    max-width: 85%;
+    font-size: 1.25rem;
+    color: #6c757d;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.divisor {
+    margin: 1.5rem 0;
+    color: inherit;
+    border: 0;
+    border-top: 1px solid #dee2e6;
+    opacity: 0.25;
+}
+
+/* Cartão do Autor */
+.cartao-autor {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    max-width: 450px;
+}
+
+.autor-avatar {
+    margin-right: 1rem;
+    font-size: 2rem;
+}
+
+.autor-tag {
+    margin-bottom: 0;
+    color: #6c757d;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.autor-nome {
+    margin-bottom: 0;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+.autor-cargo {
+    margin-bottom: 0;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Grid de Recursos */
+.recursos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.recurso-card {
+    background-color: #fff;
+    border: 0;
+    border-radius: 0.375rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.recurso-corpo {
+    padding: 1rem;
+}
+
+.recurso-titulo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.texto-azul { color: #0d6efd; }
+.texto-verde { color: #198754; }
+.texto-laranja { color: #ffc107; }
+
+.recurso-texto {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+}
+
+/* Barra de Engenharia */
+.barra-engenharia {
+    background-color: #212529;
+    color: #fff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+.engenharia-titulo {
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.engenharia-subtitulo {
+    margin-bottom: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.btn-começar {
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #0d6efd;
+    border: 1px solid #0d6efd;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    transition: background-color 0.15s ease-in-out;
+}
+
+.btn-começar:hover {
+    background-color: #0b5ed7;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .banner-destaque {
+        padding: 1.5rem;
+    }
+    .banner-titulo {
+        font-size: 1.75rem;
+    }
+    .banner-subtitulo {
+        max-width: 100%;
+        font-size: 1rem;
+    }
+    .barra-engenharia {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-começar {
+        width: 100%;
+        text-align: center;
+    }
+}

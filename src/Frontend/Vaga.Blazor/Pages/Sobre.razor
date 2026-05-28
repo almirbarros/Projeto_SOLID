@@ -1,0 +1,107 @@
+@page "/sobre"
+
+<PageTitle>Painel Técnico - Arquitetura do Sistema</PageTitle>
+
+<div class="sobre-container">
+    <div class="topo-painel">
+        <div class="topo-texto">
+            <h2 class="titulo-pagina">Painel de Conformidade Técnica</h2>
+            <p class="subtitulo-pagina">Análise de aderência aos requisitos e boas práticas corporativas.</p>
+        </div>
+        <a href="" class="btn-home">🏠 Ir para Home</a>
+    </div>
+
+    <div class="alert-demonstracao">
+        <strong>💡 Demonstração Prática:</strong> Abaixo, detalho como cada requisito exigido na descrição da vaga foi
+        implementado de forma profissional, moderna e pragmática neste ecossistema.
+    </div>
+
+    <div class="painel-grid">
+        <!-- Card SOLID -->
+        <div class="card-tecnico borda-azul">
+            <div class="card-corpo">
+                <h5 class="card-titulo texto-azul">📐 Princípios S.O.L.I.D. Aplicados</h5>
+                <ul class="lista-detalhes">
+                    <li class="lista-item">
+                        <strong>SRP (Responsabilidade Única):</strong> Validações isoladas no
+                        <code>VagaValidator</code>, dados mapeados em <code>Vaga</code> e persistência restrita ao
+                        repositório.
+                    </li>
+                    <li class="list-item">
+                        <strong>DIP (Inversão de Dependência):</strong> O controlador <code>VagasController</code>
+                        depende exclusivamente da abstraction <code>IVagaRepository</code>, isolando a API da
+                        infraestrutura de dados.
+                    </li>
+                    <li class="lista-item">
+                        <strong>ISP (Segregação de Interfaces):</strong> Contratos bem definidos e focados,
+                        garantindo que nenhuma classe herde comportamentos indesejados.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Card Design Patterns -->
+        <div class="card-tecnico borda-verde">
+            <div class="card-corpo">
+                <h5 class="card-titulo texto-verde">⚙️ Design Patterns & EF Core</h5>
+                <ul class="lista-detalhes">
+                    <li class="lista-item">
+                        <strong>Repository Pattern:</strong> Centralização das operações de banco na camada
+                        <code>Vaga.Infra</code>. Isolamento completo de queries LINQ-to-SQL.
+                    </li>
+                    <li class="lista-item">
+                        <strong>In-Memory Database:</strong> Utilização do motor em memória do Entity Framework Core
+                        para garantir execução imediata do projeto sem dependências complexas de infraestrutura
+                        local.
+                    </li>
+                    <li class="lista-item">
+                        <strong>Value Objects & Aliases:</strong> Uso estratégico de apelidos de tipo
+                        (<code>VagaClasse</code>) para blindar o compilador do C# contra conflitos de namespaces
+                        idênticos.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Card Clean Code -->
+        <div class="card-tecnico borda-laranja">
+            <div class="card-corpo">
+                <h5 class="card-titulo texto-laranja">🧹 Clean Code & C# 10 / .NET 10</h5>
+                <ul class="lista-detalhes">
+                    <li class="lista-item">
+                        <strong>File-Scoped Namespaces:</strong> Sintaxe moderna adotada em todo o projeto backend,
+                        eliminando chaves redundantes e melhorando o escaneamento visual do código.
+                    </li>
+                    <li class="lista-item">
+                        <strong>Nomenclatura Semântica:</strong> Métodos assíncronos expressivos (ex:
+                        <code>ListarTodasAsync</code>, <code>AtualizarAsync</code>) que dispensam comentários
+                        óbvios.
+                    </li>
+                    <li class="lista-item">
+                        <strong>FluentValidation Automatizado:</strong> Intercepção elegante de inconsistências no
+                        payload de entrada, blindando os endpoints com respostas HTTP padronizadas.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Card Alinhamento Cultural -->
+        <div class="card-tecnico borda-ciano">
+            <div class="card-corpo">
+                <h5 class="card-titulo texto-ciano">🌿 Alinhamento com a Cultura de Inclusão</h5>
+                <div class="cultura-bloco">
+                    A arquitetura do domínio materializa o compromisso ético e transformador exigido pela vaga
+                    através da flag <code>EhVagaAfirmativa</code>.
+                    Este campo integra nativamente o banco de dados, as validações de negócio, o pipeline REST da
+                    API e as interfaces reativas do Blazor WebAssembly, conectando a técnica diretamente ao
+                    propósito social da empresa.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rodapé Técnico -->
+    <footer class="rodape-tecnico">
+        Desenvolvido por <strong>Almir Barros</strong> — Analista de Sistemas • Projetado para Escalabilidade
+    </footer>
+</div>

@@ -1,0 +1,144 @@
+@page "/vagas-publicadas"
+@using VagaClasse = Vaga.Domain.Entities.Vaga
+@inject HttpClient Http
+
+<div class="vagas-container">
+    <h3 class="titulo-pagina">Oportunidades Publicadas</h3>
+    <p class="subtitulo-pagina">Gerencie as vagas ativas no sistema.</p>
+
+    @if (errosEdicao.Any())
+    {
+        <div class="alert-erros">
+            <ul>
+                @foreach (var erro in errosEdicao)
+                {
+                    <li>@erro</li>
+                }
+            </ul>
+        </div>
+    }
+
+    @if (vagas == null)
+    {
+        <div class="spinner-carregando" role="status"><span>Carregando...</span></div>
+    }
+    else if (!vagas.Any())
+    {
+        <div class="alert-info">Nenhuma vaga foi publicada ainda.</div>
+    }
+    else
+    {
+        <div class="controles-painel">
+            <label class="ordenacao-label" for="selectOrdenacao">Ordenar por:</label>
+            <select id="selectOrdenacao" class="form-select-ordenacao" @onchange="OnOrdenacaoMudou">
+                <option value="Nome">🔤 Nome / Título</option>
+                <option value="DataInicio">📅 Data de Início</option>
+                <option value="DataFim">📆 Data de Término</option>
+            </select>
+        </div>
+
+        <div class="vagas-grid">
+            @foreach (var vaga in VagasOrdenadas)
+            {
+                var estaExpirada = vaga.DataFim.Date < DateTime.Today;
+
+                <div class="vaga-card @(estaExpirada ? "card-desabilitado" : "")">
+                    <div class="card-corpo">
+                        <div class="card-conteudo">
+                            <h5 class="card-titulo">
+                                @vaga.Titulo
+                                @if (estaExpirada)
+                                {
+                                    <span class="badge-expirado">🛑 Expirada</span>
+                                }
+                            </h5>
+                            <p class="card-descricao">@vaga.Descricao</p>
+
+                            <div class="badges-grupo">
+                                <span class="badge-tipo">@vaga.TipoVaga</span>
+                                @if (vaga.EhVagaAfirmativa)
+                                {
+                                    <span class="badge-afirmativa">🌿 Vaga Afirmativa</span>
+                                }
+                            </div>
+
+                            <div class="datas-info">
+                                <span>Início: @vaga.DataInicio.ToString("dd/MM/yyyy")</span>
+                                <span>Término: @vaga.DataFim.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+
+                        <div class="card-acoes">
+                            <button class="btn-editar" @onclick="() => IniciarEdicao(vaga)">✏️ Editar</button>
+                            <button class="btn-remover" @onclick="() => ConfirmarRemover(vaga.Id)">🗑️ Remover</button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (vagaParaEditar != null)
+    {
+        <!-- componente isolado de edição -->
+        <EditarVagaModal Vaga="@vagaParaEditar" OnConfirmar="FinalizarEdicaoComSucesso" OnCancelar="CancelarEdicao"
+                         OnErroOcorreu="ExibirErrosDeValidacao" />
+    }
+</div>
+
+@code {
+    private List<VagaClasse>? vagas;
+    private VagaClasse? vagaParaEditar;
+    private string criterioOrdenacao = "Nome";
+    private List<string> errosEdicao = new();
+
+    protected override async Task OnInitializedAsync() => await CarregarVagas();
+
+    private async Task CarregarVagas()
+    {
+        try { vagas = await Http.GetFromJsonAsync<List<VagaClasse>>("api/vagas"); }
+        catch { vagas = new List<VagaClasse>(); }
+    }
+
+    private IEnumerable<VagaClasse> VagasOrdenadas => criterioOrdenacao switch
+    {
+        "DataInicio" => vagas?.OrderBy(v => v.DataInicio) ?? Enumerable.Empty<VagaClasse>(),
+        "DataFim" => vagas?.OrderBy(v => v.DataFim) ?? Enumerable.Empty<VagaClasse>(),
+        _ => vagas?.OrderBy(v => v.Titulo) ?? Enumerable.Empty<VagaClasse>()
+    };
+
+    private void OnOrdenacaoMudou(ChangeEventArgs e) => criterioOrdenacao = e.Value?.ToString() ?? "Nome";
+
+    private void IniciarEdicao(VagaClasse vaga)
+    {
+        errosEdicao.Clear();
+        vagaParaEditar = new VagaClasse
+        {
+            Id = vaga.Id,
+            Titulo = vaga.Titulo,
+            Descricao = vaga.Descricao,
+            TipoVaga = vaga.TipoVaga,
+            EhVagaAfirmativa = vaga.EhVagaAfirmativa,
+            DataInicio = vaga.DataInicio,
+            DataFim = vaga.DataFim,
+            CriadaEm = vaga.CriadaEm
+        };
+    }
+
+    private void CancelarEdicao() => vagaParaEditar = null;
+
+    private async Task FinalizarEdicaoComSucesso()
+    {
+        vagaParaEditar = null;
+        errosEdicao.Clear();
+        await CarregarVagas();
+    }
+
+    private void ExibirErrosDeValidacao(List<string> erros) => errosEdicao = erros;
+
+    private async Task ConfirmarRemover(Guid id)
+    {
+        var response = await Http.DeleteAsync($"api/vagas/{id}");
+        if (response.IsSuccessStatusCode) await CarregarVagas();
+    }
+}

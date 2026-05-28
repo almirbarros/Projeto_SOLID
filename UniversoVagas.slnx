@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Backend/">
+    <Project Path="src/Backend/Vaga.API/Vaga.API.csproj" />
+    <Project Path="src/Backend/Vaga.Domain/Vaga.Domain.csproj" />
+    <Project Path="src/Backend/Vaga.Infra/Vaga.Infra.csproj" />
+  </Folder>
+  <Folder Name="/src/Frontend/">
+    <Project Path="src/Frontend/Vaga.Blazor/Vaga.Blazor.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Vaga.Tests/Vaga.Tests.csproj" />
+  </Folder>
+</Solution>

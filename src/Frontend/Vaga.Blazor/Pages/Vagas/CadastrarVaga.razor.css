@@ -1,0 +1,152 @@
+/* Container principal do formulário */
+.cadastro-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.titulo-pagina {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 0.25rem;
+}
+
+.subtitulo-pagina {
+    color: #6c757d;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Caixa de Alerta de Erros */
+.alert-erros {
+    background-color: #f8d7da;
+    border: 1px solid #f5c2c7;
+    color: #842029;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    margin-bottom: 1.5rem;
+}
+
+.alert-erros ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+/* Estrutura do Formulário e Espaçamentos */
+.form-cadastro {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.campo-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Agrupamento lado a lado para campos de data */
+.campo-linha-dupla {
+    display: flex;
+    gap: 1rem;
+}
+
+.campo-linha-dupla .campo-grupo {
+    flex: 1;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #212529;
+    font-size: 0.95rem;
+}
+
+/* Estilização dos Inputs e seletores de data */
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    color: #212529;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-textarea {
+    resize: vertical;
+}
+
+/* Customização do bloco Checkbox */
+.campo-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.checkbox-input {
+    width: 1em;
+    height: 1em;
+    cursor: pointer;
+}
+
+.checkbox-label {
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.95rem;
+}
+
+/* Botão de Submissão Moderno */
+.btn-publicar {
+    align-self: flex-start;
+    padding: 0.5rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #198754;
+    border: 1px solid #198754;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+.btn-publicar:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+/* Responsividade para telas de celulares menores */
+@media (max-width: 576px) {
+    .campo-linha-dupla {
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+}
+
+.msg-erro {
+    color: #dc3545;
+    font-size: 0.825rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Modifica sutilmente a borda dos inputs inválidos que o Blazor marca automaticamente */
+.form-input.invalid, 
+.form-textarea.invalid, 
+.form-select.invalid {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}

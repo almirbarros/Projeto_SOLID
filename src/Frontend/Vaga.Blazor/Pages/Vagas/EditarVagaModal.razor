@@ -1,0 +1,90 @@
+@using VagaClasse = Vaga.Domain.Entities.Vaga
+@inject HttpClient Http
+
+<div class="edicao-overlay">
+    <div class="edicao-card">
+        <h4>✏️ Editar Vaga: @Vaga.Titulo</h4>
+
+        <EditForm Model="@Vaga" OnValidSubmit="SalvarEdicao" class="form-cadastro-interno">
+            <DataAnnotationsValidator />
+
+            <div class="campo-grupo">
+                <label class="form-label">Título</label>
+                <InputText @bind-Value="Vaga.Titulo" class="form-input" />
+                <ValidationMessage For="@(() => Vaga.Titulo)" class="msg-erro" />
+            </div>
+
+            <div class="campo-grupo">
+                <label class="form-label">Descrição</label>
+                <InputTextArea @bind-Value="Vaga.Descricao" class="form-textarea" rows="3" />
+                <ValidationMessage For="@(() => Vaga.Descricao)" class="msg-erro" />
+            </div>
+
+            <div class="campo-grupo">
+                <label class="form-label">Tipo de Vaga</label>
+                <InputSelect @bind-Value="Vaga.TipoVaga" class="form-select">
+                    <option value="Remoto">Remoto</option>
+                    <option value="Híbrido">Híbrido</option>
+                    <option value="Presencial">Presencial</option>
+                </InputSelect>
+                <ValidationMessage For="@(() => Vaga.TipoVaga)" class="msg-erro" />
+            </div>
+
+            <div class="campo-linha-dupla">
+                <div class="campo-grupo">
+                    <label class="form-label">Data de Início</label>
+                    <InputDate @bind-Value="Vaga.DataInicio" class="form-input"
+                               ParsingErrorMessage="A data de início deve ser uma data válida." />
+                    <ValidationMessage For="@(() => Vaga.DataInicio)" class="msg-erro" />
+                </div>
+                <div class="campo-grupo">
+                    <label class="form-label">Data de Término</label>
+                    <InputDate @bind-Value="Vaga.DataFim" class="form-input"
+                               ParsingErrorMessage="A data de término deve ser uma data válida." />
+                    <ValidationMessage For="@(() => Vaga.DataFim)" class="msg-erro" />
+                </div>
+            </div>
+
+            <div class="campo-checkbox">
+                <InputCheckbox @bind-Value="Vaga.EhVagaAfirmativa" class="checkbox-input" id="vagaAfirmativaEditar" />
+                <label class="checkbox-label" for="vagaAfirmativaEditar">
+                    Esta é uma vaga afirmativa (Diversidade e Inclusão)
+                </label>
+            </div>
+
+            <div class="botoes-acoes-edicao">
+                <button type="submit" class="btn-salvar">💾 Salvar Alterações</button>
+                <button type="button" class="btn-cancelar" @onclick="Fechar">❌ Cancelar</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter] public VagaClasse Vaga { get; set; } = new();
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+    [Parameter] public EventCallback OnCancelar { get; set; }
+    [Parameter] public EventCallback<List<string>> OnErroOcorreu { get; set; }
+
+    private async Task SalvarEdicao()
+    {
+        if (Vaga.DataFim < Vaga.DataInicio)
+        {
+            await OnErroOcorreu.InvokeAsync(new List<string> { "A data de término não pode ser anterior à data de início." });
+            return;
+        }
+
+        var response = await Http.PutAsJsonAsync($"api/vagas/{Vaga.Id}", Vaga);
+        if (response.IsSuccessStatusCode)
+        {
+            await OnConfirmar.InvokeAsync();
+        }
+        else
+        {
+            var errosApi = await response.Content.ReadFromJsonAsync<List<string>>();
+            if (errosApi != null) await OnErroOcorreu.InvokeAsync(errosApi);
+        }
+    }
+
+    private async Task Fechar() => await OnCancelar.InvokeAsync();
+}
