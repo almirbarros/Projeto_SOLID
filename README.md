@@ -130,22 +130,11 @@ O projeto adota uma divisão modular profissional para evitar acoplamento visual
 📁 tests
 └── 📁 Vaga.Tests                           # Projeto de Testes Automatizados (xUnit)
     │
-    ├── 📁 Domain                           # Testes das regras puras de domínio
-    │   └── 📁 Entities
-    │       └── 📄 VagaTests.cs             # Testes de unidade da Entidade (Muda estado correto?)
+    ├── 📁 Services                         # Pasta do seu teste
+    │   └── 📄 VagaServiceTests.cs          # O seu arquivo de teste funcional (Enum + Entidade Rica)
     │
-    ├── 📁 Services                         # Testes dos fluxos e validadores (Sua pasta atual)
-    │   └── 📄 VagaServiceTests.cs          # Testes do VagaValidator (FluentValidation + Enum)
-    │
-    ├── 📁 API                              # Testes de integração dos Endpoints (Opcional/Futuro)
-    │   └── 📁 Controllers
-    │       └── 📄 VagasControllerTests.cs  # Testes dos endpoints com DTOs e retornos HTTP
-    │
-    ├── 📁 MockData                         # Fábricas de objetos para apoiar os testes (Clean Code)
-    │   └── 📄 VagaTestDataBuilder.cs       # Builder para gerar instâncias de Vaga válidas/inválidas
-    │
-    ├── 📄 Usings.cs                        # Imports globais de testes (Xunit, Moq, FluentValidation)
-    └── 📄 Vaga.Tests.csproj                # Arquivo de gerenciamento do projeto de testes
+    └── 📄 Vaga.Tests.csproj                # Arquivo gerenciador do projeto de testes
+
 ```
 
 ---
