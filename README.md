@@ -41,7 +41,7 @@ Para garantir escalabilidade, manutenibilidade e autonomia técnica, o projeto a
 ---
 
 ## 📁 Arquitetura Estrutural do Backend
-
+```
 📁 src
 └── 📁 Backend
     │
@@ -70,13 +70,13 @@ Para garantir escalabilidade, manutenibilidade e autonomia técnica, o projeto a
         │   └── 📄 launchSettings.json      # Perfis de inicialização (Configuração das portas HTTP 5194)
         ├── 📄 Program.cs                   # Pipeline HTTP, CORS, IoC/DI e JsonStringEnumConverter
         └── 📄 Vaga.API.csproj              # Arquivo de gerenciamento do projeto da API
-
+```
 
 ## 📁 Arquitetura Estrutural do Frontend (Blazor SPA)
 
 O projeto adota uma divisão modular profissional para evitar acoplamento visual e técnico na raiz do projeto:
 
-```text
+```
 📁 src
 └── 📁 Frontend
     └── 📁 Vaga.Blazor                      # Interface SPA Modular Reativa
@@ -126,6 +126,7 @@ O projeto adota uma divisão modular profissional para evitar acoplamento visual
 
 ## 📁 Arquitetura Estrutural do Teste
 
+```
 📁 tests
 └── 📁 Vaga.Tests                           # Projeto de Testes Automatizados (xUnit)
     │
@@ -145,8 +146,7 @@ O projeto adota uma divisão modular profissional para evitar acoplamento visual
     │
     ├── 📄 Usings.cs                        # Imports globais de testes (Xunit, Moq, FluentValidation)
     └── 📄 Vaga.Tests.csproj                # Arquivo de gerenciamento do projeto de testes
-
-
+```
 
 ---
 
