@@ -177,7 +177,7 @@ Abra um segundo terminal na pasta raiz e execute:
 dotnet run --project src/Frontend/Vaga.Blazor/Vaga.Blazor.csproj
 ```
 
-O frontend estará disponível em: **`https://localhost:5162`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
+O frontend estará disponível em: **`http://localhost:5162`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
 
 ---
 
