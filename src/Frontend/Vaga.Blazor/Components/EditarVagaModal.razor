@@ -1,0 +1,110 @@
+@using Vaga.Blazor.Models
+@using Vaga.Domain.Enums
+@inject HttpClient Http
+
+@if (Exibir)
+{
+    <!-- Overlay customizado que cobre a tela inteira -->
+    <div class="edicao-overlay" role="dialog" aria-modal="true">
+        <div class="edicao-card">
+            
+            <div class="modal-header-personalizado">
+                <h4>✏️ Editar Detalhes da Vaga</h4>
+            </div>
+
+            <EditForm Model="@Model" OnValidSubmit="SalvarAlteracoes">
+                <div class="form-cadastro-interno">
+                    
+                    @if (errosValidacao.Any())
+                    {
+                        <div class="msg-erro-painel">
+                            <ul>
+                                @foreach (var erro in errosValidacao)
+                                {
+                                    <li>@erro</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="campo-grupo">
+                        <label class="form-label">Título da Vaga</label>
+                        <InputText @bind-Value="Model.Titulo" class="form-input" />
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label class="form-label">Descrição</label>
+                        <InputTextArea @bind-Value="Model.Descricao" class="form-textarea" rows="3" />
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label class="form-label">Tipo de Vaga</label>
+                        <InputSelect @bind-Value="Model.TipoVaga" class="form-select">
+                            @foreach (var tipo in Enum.GetValues<TipoVaga>())
+                            {
+                                <option value="@tipo">@tipo.ToString()</option>
+                            }
+                        </InputSelect>
+                    </div>
+
+                    <div class="campo-linha-dupla">
+                        <div class="campo-grupo">
+                            <label class="form-label">Data Início</label>
+                            <InputDate @bind-Value="Model.DataInicio" class="form-input" />
+                        </div>
+                        <div class="campo-grupo">
+                            <label class="form-label">Data Término</label>
+                            <InputDate @bind-Value="Model.DataFim" class="form-input" />
+                        </div>
+                    </div>
+
+                    <div class="campo-checkbox">
+                        <InputCheckbox @bind-Value="Model.EhVagaAfirmativa" id="modalEhAfirmativa" class="checkbox-input" />
+                        <label class="checkbox-label" for="modalEhAfirmativa">Esta é uma vaga afirmativa?</label>
+                    </div>
+
+                    <div class="botoes-acoes-edicao">
+                        <button type="button" class="btn-cancelar" @onclick="FecharModal">Cancelar</button>
+                        <button type="submit" class="btn-salvar">Salvar Alterações</button>
+                    </div>
+
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+@code {
+    private List<string> errosValidacao = new List<string>();
+
+    [Parameter] public bool Exibir { get; set; }
+    [Parameter] public Guid Id { get; set; }
+    [Parameter] public VagaFormModel Model { get; set; } = new VagaFormModel();
+
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+    [Parameter] public EventCallback OnCancelar { get; set; }
+
+    private async Task SalvarAlteracoes()
+    {
+        errosValidacao.Clear();
+        
+        var response = await Http.PutAsJsonAsync($"http://localhost:5194/api/vagas/{Id}", Model);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await OnConfirmar.InvokeAsync();
+        }
+        else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            var erros = await response.Content.ReadFromJsonAsync<List<string>>();
+            if (erros != null) errosValidacao = erros;
+        }
+    }
+
+    private async Task FecharModal()
+    {
+        errosValidacao.Clear();
+        await OnCancelar.InvokeAsync();
+    }
+}

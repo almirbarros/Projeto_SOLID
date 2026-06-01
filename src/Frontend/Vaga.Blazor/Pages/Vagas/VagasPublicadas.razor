@@ -1,10 +1,18 @@
 @page "/vagas-publicadas"
-@using VagaClasse = Vaga.Domain.Entities.Vaga
+@using Vaga.Blazor.Models
+@using Vaga.Blazor.Components
 @inject HttpClient Http
 
 <div class="vagas-container">
     <h3 class="titulo-pagina">Oportunidades Publicadas</h3>
     <p class="subtitulo-pagina">Gerencie as vagas ativas no sistema.</p>
+
+    @if (!string.IsNullOrEmpty(mensagemErroTela))
+    {
+        <div class="alert alert-danger font-weight-bold p-3 mb-3">
+            ⚠️ <strong>Diagnóstico do Front-end:</strong> @mensagemErroTela
+        </div>
+    }
 
     @if (errosEdicao.Any())
     {
@@ -55,7 +63,7 @@
                             <p class="card-descricao">@vaga.Descricao</p>
 
                             <div class="badges-grupo">
-                                <span class="badge-tipo">@vaga.TipoVaga</span>
+                                <span class="badge-tipo">@vaga.TipoVaga.ToString()</span>
                                 @if (vaga.EhVagaAfirmativa)
                                 {
                                     <span class="badge-afirmativa">🌿 Vaga Afirmativa</span>
@@ -78,67 +86,121 @@
         </div>
     }
 
-    @if (vagaParaEditar != null)
-    {
-        <!-- componente isolado de edição -->
-        <EditarVagaModal Vaga="@vagaParaEditar" OnConfirmar="FinalizarEdicaoComSucesso" OnCancelar="CancelarEdicao"
-                         OnErroOcorreu="ExibirErrosDeValidacao" />
-    }
+    <!-- COMPONENTE DECLARATIVO E ISOLADO DO MODAL -->
+    <EditarVagaModal Exibir="@exibirModal"
+                     Id="@idVagaParaEditar"
+                     Model="@modelParaEditar"
+                     OnConfirmar="FinalizarEdicaoComSucesso"
+                     OnCancelar="FecharModalEdicao" />
+                     
 </div>
 
 @code {
-    private List<VagaClasse>? vagas;
-    private VagaClasse? vagaParaEditar;
+    private List<VagaResponseDto>? vagas;
     private string criterioOrdenacao = "Nome";
     private List<string> errosEdicao = new();
+    private string mensagemErroTela = string.Empty;
 
-    protected override async Task OnInitializedAsync() => await CarregarVagas();
+    // Estados de controle do Modal
+    private bool exibirModal = false;
+    private Guid idVagaParaEditar;
+    private VagaFormModel modelParaEditar = new VagaFormModel();
+
+    // Ciclo de vida reativo moderno para evitar perdas de estado assíncronas
+    protected override async Task OnParametersSetAsync()
+    {
+        if (vagas == null)
+        {
+            await CarregarVagas();
+        }
+    }
 
     private async Task CarregarVagas()
     {
-        try { vagas = await Http.GetFromJsonAsync<List<VagaClasse>>("api/vagas"); }
-        catch { vagas = new List<VagaClasse>(); }
+        try 
+        { 
+            mensagemErroTela = "Iniciando chamada para a API...";
+            StateHasChanged();
+
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+
+            // Chamada com rota direta para isolar falhas de configuração do BaseAddress
+            var response = await Http.GetAsync("http://localhost:5194/api/vagas");
+
+            if (response.IsSuccessStatusCode)
+            {
+                vagas = await response.Content.ReadFromJsonAsync<List<VagaResponseDto>>(options);
+                mensagemErroTela = string.Empty; 
+            }
+            else
+            {
+                mensagemErroTela = $"A API recusou a requisição. Código HTTP: {response.StatusCode} - {response.ReasonPhrase}";
+                vagas = new List<VagaResponseDto>();
+            }
+        }
+        catch (Exception ex)
+        { 
+            mensagemErroTela = $"Falha de conexão ou desserialização: {ex.Message} -> {ex.InnerException?.Message}";
+            vagas = new List<VagaResponseDto>(); 
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
 
-    private IEnumerable<VagaClasse> VagasOrdenadas => criterioOrdenacao switch
+    private IEnumerable<VagaResponseDto> VagasOrdenadas => criterioOrdenacao switch
     {
-        "DataInicio" => vagas?.OrderBy(v => v.DataInicio) ?? Enumerable.Empty<VagaClasse>(),
-        "DataFim" => vagas?.OrderBy(v => v.DataFim) ?? Enumerable.Empty<VagaClasse>(),
-        _ => vagas?.OrderBy(v => v.Titulo) ?? Enumerable.Empty<VagaClasse>()
+        "DataInicio" => vagas?.OrderBy(v => v.DataInicio) ?? Enumerable.Empty<VagaResponseDto>(),
+        "DataFim" => vagas?.OrderBy(v => v.DataFim) ?? Enumerable.Empty<VagaResponseDto>(),
+        _ => vagas?.OrderBy(v => v.Titulo) ?? Enumerable.Empty<VagaResponseDto>()
     };
 
     private void OnOrdenacaoMudou(ChangeEventArgs e) => criterioOrdenacao = e.Value?.ToString() ?? "Nome";
 
-    private void IniciarEdicao(VagaClasse vaga)
+    private void IniciarEdicao(VagaResponseDto vaga)
     {
         errosEdicao.Clear();
-        vagaParaEditar = new VagaClasse
+        idVagaParaEditar = vaga.Id;
+        
+        modelParaEditar = new VagaFormModel
         {
-            Id = vaga.Id,
             Titulo = vaga.Titulo,
             Descricao = vaga.Descricao,
             TipoVaga = vaga.TipoVaga,
             EhVagaAfirmativa = vaga.EhVagaAfirmativa,
             DataInicio = vaga.DataInicio,
-            DataFim = vaga.DataFim,
-            CriadaEm = vaga.CriadaEm
+            DataFim = vaga.DataFim
         };
+
+        exibirModal = true; 
+        StateHasChanged();
     }
 
-    private void CancelarEdicao() => vagaParaEditar = null;
+    private void FecharModalEdicao()
+    {
+        exibirModal = false;
+        StateHasChanged();
+    }
 
     private async Task FinalizarEdicaoComSucesso()
     {
-        vagaParaEditar = null;
-        errosEdicao.Clear();
+        exibirModal = false;
+        vagas = null; // Força o OnParametersSetAsync a buscar novos dados
         await CarregarVagas();
     }
 
-    private void ExibirErrosDeValidacao(List<string> erros) => errosEdicao = erros;
-
     private async Task ConfirmarRemover(Guid id)
     {
-        var response = await Http.DeleteAsync($"api/vagas/{id}");
-        if (response.IsSuccessStatusCode) await CarregarVagas();
+        var response = await Http.DeleteAsync($"http://localhost:5194/api/vagas/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+            vagas = null;
+            await CarregarVagas();
+        }
     }
 }

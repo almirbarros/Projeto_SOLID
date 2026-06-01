@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Vaga.Domain.Validators;
@@ -8,26 +9,32 @@ using VagaClasse = Vaga.Domain.Entities.Vaga;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Registra os Controllers
-builder.Services.AddControllers();
+// 1. Registra os Controllers + Mapeamento de Enums para String no JSON global
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 2. Configura o Banco de Dados em Memória (Para testes rápidos)
+// 2. Configura o Banco de Dados em Memória
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("UniversoVagasDb"));
 
-// 3. Injeção de Dependência das Regras de Negócio e Banco
+// 3. Injeção de Dependência
 builder.Services.AddScoped<IVagaRepository, VagaRepository>();
 builder.Services.AddScoped<IValidator<VagaClasse>, VagaValidator>();
 
-// 4. Configuração do CORS (Evita o bloqueio do navegador)
+// 4. Configuração do CORS profissional e segura para o Blazor
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("BlazorApp", policy =>
-        policy.AllowAnyOrigin()
+        policy.WithOrigins("http://localhost:5162", "https://localhost:5162") 
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader()
+              .AllowCredentials()); 
 });
 
 var app = builder.Build();
@@ -36,7 +43,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Vaga API v1");
+    });
 }
 
 app.UseHttpsRedirection();

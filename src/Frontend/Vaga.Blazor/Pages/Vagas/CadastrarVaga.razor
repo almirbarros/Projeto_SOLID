@@ -1,17 +1,17 @@
 @page "/cadastrar-vaga"
-@using VagaClasse = Vaga.Domain.Entities.Vaga
+@using Vaga.Blazor.Models
+@using Vaga.Domain.Enums
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
 <div class="cadastro-container">
-    <h3 class="titulo-pagina">Criar Nova Oportunidade</h3>
-    <p class="subtitulo-pagina">Promovendo inovação e transformação social através de vagas inclusivas.</p>
+    <h3>Cadastrar Nova Vaga</h3>
 
-    @if (erros.Any())
+    @if (errosValidacao != null && errosValidacao.Any())
     {
-        <div class="alert-erros">
+        <div class="alert alert-danger">
             <ul>
-                @foreach (var erro in erros)
+                @foreach (var erro in errosValidacao)
                 {
                     <li>@erro</li>
                 }
@@ -19,94 +19,67 @@
         </div>
     }
 
-    <EditForm Model="@novaVaga" OnValidSubmit="HandleCadastro" class="form-cadastro">
-        <!-- Habilita o mecanismo de validação por anotações de dados -->
-        <DataAnnotationsValidator />
-
-        <div class="campo-grupo">
-            <label class="form-label">Título da Vaga</label>
-            <InputText @bind-Value="novaVaga.Titulo" class="form-input" placeholder="Ex: Desenvolvedor .NET PL" />
-            <ValidationMessage For="@(() => novaVaga.Titulo)" class="msg-erro" />
+    <EditForm Model="@formModel" OnValidSubmit="ExecutarCadastro">
+        <div class="form-group mb-3">
+            <label>Título da Vaga</label>
+            <InputText @bind-Value="formModel.Titulo" class="form-control" />
         </div>
 
-        <div class="campo-grupo">
-            <label class="form-label">Descrição</label>
-            <InputTextArea @bind-Value="novaVaga.Descricao" class="form-textarea" rows="4" />
-            <ValidationMessage For="@(() => novaVaga.Descricao)" class="msg-erro" />
+        <div class="form-group mb-3">
+            <label>Descrição</label>
+            <InputTextArea @bind-Value="formModel.Descricao" class="form-control" />
         </div>
 
-        <div class="campo-grupo">
-            <label class="form-label">Tipo de Vaga</label>
-            <InputSelect @bind-Value="novaVaga.TipoVaga" class="form-select">
-                <option value="">-- Selecione o Modelo --</option>
-                <option value="Remoto">🏢 Remoto (Liberdade geográfica)</option>
-                <option value="Híbrido">🤝 Híbrido (O melhor dos dois mundos)</option>
-                <option value="Presencial">📍 Presencial</option>
+        <div class="form-group mb-3">
+            <label>Tipo de Vaga</label>
+            <InputSelect @bind-Value="formModel.TipoVaga" class="form-control">
+                @foreach (var tipo in Enum.GetValues<TipoVaga>())
+                {
+                    <option value="@tipo">@tipo.ToString()</option>
+                }
             </InputSelect>
-            <ValidationMessage For="@(() => novaVaga.TipoVaga)" class="msg-erro" />
         </div>
 
-        <div class="campo-linha-dupla">
-            <div class="campo-grupo">
-                <label class="form-label">Data de Início</label>
-                <!-- Atributo ParsingErrorMessage adicionado abaixo -->
-                <InputDate @bind-Value="novaVaga.DataInicio" class="form-input"
-                           ParsingErrorMessage="A data de início deve ser uma data válida." />
-                <ValidationMessage For="@(() => novaVaga.DataInicio)" class="msg-erro" />
-            </div>
-
-            <div class="campo-grupo">
-                <label class="form-label">Data de Término</label>
-                <!-- Atributo ParsingErrorMessage adicionado abaixo -->
-                <InputDate @bind-Value="novaVaga.DataFim" class="form-input"
-                           ParsingErrorMessage="A data de término deve ser uma data válida." />
-                <ValidationMessage For="@(() => novaVaga.DataFim)" class="msg-erro" />
-            </div>
+        <div class="form-group mb-3">
+            <label>Data de Início</label>
+            <InputDate @bind-Value="formModel.DataInicio" class="form-control" />
         </div>
 
-        <div class="campo-checkbox">
-            <InputCheckbox @bind-Value="novaVaga.EhVagaAfirmativa" class="checkbox-input" id="vagaAfirmativa" />
-            <label class="checkbox-label" for="vagaAfirmativa">
-                Esta é uma vaga afirmativa (Diversidade e Inclusão)
-            </label>
+        <div class="form-group mb-3">
+            <label>Data de Término</label>
+            <InputDate @bind-Value="formModel.DataFim" class="form-control" />
         </div>
 
-        <button type="submit" class="btn-publicar">Publicar Vaga</button>
+        <div class="form-check mb-3">
+            <InputCheckbox @bind-Value="formModel.EhVagaAfirmativa" id="ehAfirmativa" class="form-check-input" />
+            <label class="form-check-label" for="ehAfirmativa">Esta é uma vaga afirmativa?</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Vaga</button>
     </EditForm>
 </div>
 
 @code {
-    // Inicializa o objeto já com as datas padrão válidas do dia atual
-    // Isso remove o estado inválido "01/01/0001" e permite que o Blazor valide o formulário com sucesso
-    private VagaClasse novaVaga = new()
+    private VagaFormModel formModel = new VagaFormModel();
+    private List<string> errosValidacao = new List<string>();
+
+    private async Task ExecutarCadastro()
     {
-        DataInicio = DateTime.Today,
-        DataFim = DateTime.Today.AddDays(30) // Sugere automaticamente 30 dias de prazo
-    };
-
-    private List<string> erros = new();
-
-    private async Task HandleCadastro()
-    {
-        erros.Clear();
-
-        // Validação lógica extra de segurança no front-end
-        if (novaVaga.DataFim < novaVaga.DataInicio)
-        {
-            erros.Add("A data de término não pode ser anterior à data de início.");
-            return;
-        }
-
-        var response = await Http.PostAsJsonAsync("api/vagas", novaVaga);
+        errosValidacao.Clear();
+        
+        var response = await Http.PostAsJsonAsync("api/vagas", formModel);
 
         if (response.IsSuccessStatusCode)
         {
             Navigation.NavigateTo("/vagas-publicadas");
         }
-        else
+        else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
         {
-            var errosApi = await response.Content.ReadFromJsonAsync<List<string>>();
-            if (errosApi != null) erros = errosApi;
+            var erros = await response.Content.ReadFromJsonAsync<List<string>>();
+            if (erros != null) 
+            {
+                errosValidacao = erros;
+            }
         }
     }
 }

@@ -1,28 +1,45 @@
-using System;
-using System.ComponentModel.DataAnnotations;
+using Vaga.Domain.Enums;
 
 namespace Vaga.Domain.Entities;
 
 public class Vaga
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public DateTime CriadaEm { get; init; } = DateTime.UtcNow;
 
-    [Required(ErrorMessage = "O título da vaga é obrigatório.")]
-    public string Titulo { get; set; } = string.Empty;
+    public string Titulo { get; private set; } = string.Empty;
+    public string Descricao { get; private set; } = string.Empty;
+    public TipoVaga TipoVaga { get; private set; } 
+    public bool EhVagaAfirmativa { get; private set; }
+    public DateTime DataInicio { get; private set; }
+    public DateTime DataFim { get; private set; }
 
-    [Required(ErrorMessage = "A descrição da vaga é obrigatória.")]
-    public string Descricao { get; set; } = string.Empty;
+    // Construtor para criação de novas vagas com estado válido
+    public Vaga(string titulo, string descricao, TipoVaga tipoVaga, bool ehVagaAfirmativa, DateTime dataInicio, DateTime dataFim)
+    {
+        Titulo = titulo;
+        Descricao = descricao;
+        TipoVaga = tipoVaga;
+        EhVagaAfirmativa = ehVagaAfirmativa;
+        DataInicio = dataInicio;
+        DataFim = dataFim;
+    }
 
-    [Required(ErrorMessage = "Selecione o tipo de vaga.")]
-    public string TipoVaga { get; set; } = string.Empty;
+    // Construtor necessário para o EF Core mapear os dados da Infra
+    protected Vaga() { }
 
-    public bool EhVagaAfirmativa { get; set; }
+    // Métodos de negócio para alteração segura de estado
+    public void AtualizarDados(string titulo, string descricao, TipoVaga tipoVaga, bool ehVagaAfirmativa)
+    {
+        Titulo = titulo;
+        Descricao = descricao;
+        TipoVaga = tipoVaga;
+        EhVagaAfirmativa = ehVagaAfirmativa;
+    }
 
-    [Required(ErrorMessage = "A data de início é obrigatória.")]
-    public DateTime DataInicio { get; set; } = DateTime.Today;
-
-    [Required(ErrorMessage = "A data de término é obrigatória.")]
-    public DateTime DataFim { get; set; } = DateTime.Today.AddDays(30); // Sugere 30 dias por padrão
-
-    public DateTime CriadaEm { get; set; } = DateTime.UtcNow;
+    public void AlterarPeriodo(DateTime dataInicio, DateTime dataFim)
+    {
+        DataInicio = dataInicio;
+        DataFim = dataFim;
+    }
 }

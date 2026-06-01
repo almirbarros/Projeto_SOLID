@@ -1,14 +1,9 @@
-using System.Linq;
 using FluentValidation;
-using Vaga.Domain.Entities;
 
 namespace Vaga.Domain.Validators;
 
 public class VagaValidator : AbstractValidator<Entities.Vaga>
 {
-    // Lista de tipos permitidos na hora do cadastro
-    private static readonly string[] TiposPermitidos = { "Remoto", "Híbrido", "Presencial" };
-
     public VagaValidator()
     {
         RuleFor(v => v.Titulo)
@@ -19,9 +14,7 @@ public class VagaValidator : AbstractValidator<Entities.Vaga>
             .NotEmpty().WithMessage("A descrição da vaga é obrigatória.");
 
         RuleFor(v => v.TipoVaga)
-            .NotEmpty().WithMessage("O tipo de vaga deve ser informado no cadastro.")
-            .Must(tipo => TiposPermitidos.Contains(tipo))
-            .WithMessage($"Tipo de vaga inválido. Escolha entre: {string.Join(", ", TiposPermitidos)}.");
+            .IsInEnum().WithMessage("Tipo de vaga inválido. Selecione uma das opções disponíveis.");
 
         RuleFor(x => x.DataInicio)
             .NotEmpty().WithMessage("A data de início é obrigatória.");
