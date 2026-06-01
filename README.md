@@ -90,7 +90,7 @@ Abra um terminal na pasta raiz e execute:
 $env:ASPNETCORE_ENVIRONMENT="Development"; dotnet run --project src/Backend/Vaga.API/Vaga.API.csproj
 ```
 
-A API iniciará localmente. Abra o navegador em: **`https://localhost:5194/swagger`** (ou a porta SSL indicada no console) para acessar o painel visual do **Swagger** e testar os endpoints RESTful.
+A API iniciará localmente. Abra o navegador em: **`http://localhost:5194/swagger`** para acessar o painel visual do **Swagger** e testar os endpoints RESTful.
 
 ### 3. Executar o Frontend (Blazor WebAssembly)
 
