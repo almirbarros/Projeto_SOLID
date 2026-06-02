@@ -40,24 +40,101 @@ Para garantir escalabilidade, manutenibilidade e autonomia técnica, o projeto a
 
 ---
 
+## 📁 Arquitetura Estrutural do Backend
+```
+📁 src
+└── 📁 Backend
+    │
+    ├── 📁 Vaga.Domain                      # Regras de Negócio Puras (Sem dependências externas)
+    │   ├── 📁 Entities
+    │   │   └── 📄 Vaga.cs                  # Entidade Rica (Construtor restrito + métodos de mutação)
+    │   ├── 📁 Enums
+    │   │   └── 📄 TipoVaga.cs              # Enum fortemente tipado (Remoto, Hibrido, Presencial)
+    │   └── 📁 Validators
+    │       └── 📄 VagaValidator.cs         # Validação de Negócio (FluentValidation com IsInEnum)
+    │
+    ├── 📁 Vaga.Infra                       # Infraestrutura de Acesso a Dados e Contratos
+    │   ├── 📁 Context
+    │   │   └── 📄 AppDbContext.cs          # DbContext (EF Core configurado em memória no Program.cs)
+    │   ├── 📁 Interfaces
+    │   │   └── 📄 IVagaRepository.cs       # Contratos/Interfaces das operações de dados
+    │   └── 📁 Repositories
+    │       └── 📄 VagaRepository.cs        # Implementação concreta do Repositório (Lê/Escreve no DbContext)
+    │
+    └── 📁 Vaga.API                         # Camada de Exposição HTTP (Endpoints RESTful)
+        ├── 📁 Controllers
+        │   └── 📄 VagasController.cs       # Controlador REST (Trata requisições através de DTOs)
+        ├── 📁 DTOs
+        │   └── 📄 VagaRequestDto.cs        # C# Record mutável/imutável para transporte leve do JSON
+        ├── 📁 Properties
+        │   └── 📄 launchSettings.json      # Perfis de inicialização (Configuração das portas HTTP 5194)
+        ├── 📄 Program.cs                   # Pipeline HTTP, CORS, IoC/DI e JsonStringEnumConverter
+        └── 📄 Vaga.API.csproj              # Arquivo de gerenciamento do projeto da API
+```
+
 ## 📁 Arquitetura Estrutural do Frontend (Blazor SPA)
 
 O projeto adota uma divisão modular profissional para evitar acoplamento visual e técnico na raiz do projeto:
 
-```text
-📁 Components/
-├── 📁 Layout/               <-- UI estrutural e menus do sistema
-│   ├── 📄 MainLayout.razor & .razor.css
-│   └── 📄 NavMenu.razor & .razor.css
-│
-└── 📁 Pages/                <-- Telas acessíveis por rotas de negócio
-    ├── 📁 Vagas/            <-- Subcontexto de gerenciamento de vagas
-    │   ├── 📄 CadastrarVaga.razor & .razor.css
-    │   ├── 📄 VagasPublicadas.razor & .razor.css
-    │   └── 📄 EditarVagaModal.razor & .razor.css  <-- Componente isolado de mutação
-    ├── 📄 Home.razor & .razor.css
-    ├── 📄 Sobre.razor & .razor.css
-    └── 📄 NotFound.razor & .razor.css
+```
+📁 src
+└── 📁 Frontend
+    └── 📁 Vaga.Blazor                      # Interface SPA Modular Reativa
+        │
+        ├── 📁 Components                   # Subcomponentes reaproveitáveis e modais
+        │   ├── 📄 EditarVagaModal.razor    # Lógica e marcação estrutural do pop-up
+        │   └── 📄 EditarVagaModal.razor.css # CSS isolado e alinhado com o pop-up
+        │
+        ├── 📁 Layout                       # Componentes globais de estrutura visual
+        │   ├── 📄 MainLayout.razor         # Layout de casca principal da aplicação
+        │   ├── 📄 MainLayout.razor.css     # CSS isolado da casca (Flexbox / Desktop vs Mobile)
+        │   ├── 📄 NavMenu.razor            # Menu lateral com links das rotas
+        │   └── 📄 NavMenu.razor.css        # CSS isolado do menu (Efeitos hover e link active)
+        │
+        ├── 📁 Models                       # Estruturas de dados exclusivas para a UI
+        │   ├── 📄 VagaFormModel.cs         # Modelo mutável para capturar dados dos inputs
+        │   └── 📄 VagaResponseDto.cs       # Record para desserializar as respostas da API
+        │
+        ├── 📁 Pages                        # Páginas SPA roteáveis do sistema
+        │   ├── 📄 Home.razor               # Página inicial do sistema
+        │   ├── 📄 Home.razor.css           # CSS isolado da página inicial (Cards de boas-vindas)
+        │   ├── 📄 NotFound.razor           # Página de erro 404 customizada
+        │   ├── 📄 NotFound.razor.css       # CSS isolado da página de erro 404
+        │   ├── 📄 Sobre.razor              # Página institucional/informações do sistema
+        │   ├── 📄 Sobre.razor.css          # CSS isolado da página Sobre
+        │   │
+        │   └── 📁 Vagas                    # Subpasta para gerenciamento de vagas
+        │       ├── 📄 CadastrarVaga.razor  # Formulário de criação na rota "/cadastrar-vaga"
+        │       ├── 📄 CadastrarVaga.razor.css # CSS isolado do formulário de cadastro
+        │       ├── 📄 VagasPublicadas.razor # Listagem reativa e controle do modal de edição
+        │       └── 📄 VagasPublicadas.razor.css # CSS isolado da grid e dos cards de vagas
+        │
+        ├── 📁 Properties
+        │   └── 📄 launchSettings.json      # Configuração da porta de execução local (5162)
+        │
+        ├── 📁 wwwroot                      # Arquivos estáticos globais (Imagens, index.html)
+        │   └── 📁 css
+        │       └── 📄 app.css              # Estilos CSS globais da aplicação
+        │
+        ├── 📄 _Imports.razor               # Diretivas globais e imports (@using Vaga.Blazor.Components)
+        ├── 📄 App.razor                    # Roteador principal do Blazor (Gerencia rotas e o NotFound)
+        ├── 📄 Program.cs                   # Configuração de Cultura (pt-BR) e HttpClient (5194)
+        └── 📄 Vaga.Blazor.csproj           # Arquivo de gerenciamento do projeto Blazor
+
+```
+
+
+## 📁 Arquitetura Estrutural do Teste
+
+```
+📁 tests
+└── 📁 Vaga.Tests                           # Projeto de Testes Automatizados (xUnit)
+    │
+    ├── 📁 Services                         # Pasta do seu teste
+    │   └── 📄 VagaServiceTests.cs          # O seu arquivo de teste funcional (Enum + Entidade Rica)
+    │
+    └── 📄 Vaga.Tests.csproj                # Arquivo gerenciador do projeto de testes
+
 ```
 
 ---
@@ -100,7 +177,7 @@ Abra um segundo terminal na pasta raiz e execute:
 dotnet run --project src/Frontend/Vaga.Blazor/Vaga.Blazor.csproj
 ```
 
-O frontend estará disponível em: **`https://localhost:5162`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
+O frontend estará disponível em: **`http://localhost:5162`** (ou a porta SSL indicada no console). Acesse para simular o ciclo completo de gerenciamento reativo.
 
 ---
 
